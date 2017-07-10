@@ -67,8 +67,8 @@ class prebin(object):
                 print("process 'Prebin' will take "+self.xname + " as String type !!!")
                 string_tag = 1
                 
-            nandata[self.xname+"_bin"] = "bin_"+str(100)
-            nandata["cut_point"]       = "missing"
+            nandata.loc[:, self.xname+"_bin"] = "bin_"+str(100)
+            nandata.loc[:, "cut_point"]       = "missing"
         else:
             nandata = pd.DataFrame()
             nonandata = self.data
@@ -81,13 +81,13 @@ class prebin(object):
                 print("process 'Prebin' will take "+self.xname + " as String type !!!")
                 string_tag = 1
 
-        nonandata[self.xname+'_bin'] = nonandata[self.xname]
-        nonandata['cut_point']  = nonandata[self.yname]
+        nonandata.loc[:, self.xname+'_bin'] = nonandata[self.xname]
+        nonandata.loc[:, 'cut_point']  = nonandata[self.yname]
         
         if (len(set(nonandata[self.xname][:1000])) >= self.binnum):
             if (self.method == 'quantile'):
                 bincut = stats.mstats.mquantiles(nonandata[self.xname], prob=np.arange(0,1,1./self.binnum))
-                #print(bincut)
+                print(bincut)
             elif (self.method == 'bucket'):
                 minvalue = min(nonandata[self.xname])
                 maxvalue = max(nonandata[self.xname])
@@ -99,21 +99,21 @@ class prebin(object):
             bincut.sort()            
             for i in np.arange(len(bincut)+1):
                 if (i == 1):
-                    nonandata[self.xname+'_bin'][nonandata[self.xname] <= bincut[i]] = 'bin_'+str(100+i)
-                    nonandata['cut_point'][nonandata[self.xname] <= bincut[i]] = bincut[i]
+                    nonandata.loc[nonandata[self.xname] <= bincut[i], self.xname+'_bin']= 'bin_'+str(100+i)                  
+                    nonandata.loc[nonandata[self.xname] <= bincut[i], 'cut_point']= bincut[i]
                 elif (i>1 and i<len(bincut)):
-                    nonandata[self.xname+'_bin'][(nonandata[self.xname] > bincut[i-1])&(nonandata[self.xname]<=bincut[i])] = 'bin_'+str(100+i) 
-                    nonandata['cut_point'][(nonandata[self.xname] > bincut[i-1])&(nonandata[self.xname]<=bincut[i])] = bincut[i]
+                    nonandata.loc[(nonandata[self.xname] > bincut[i-1])&(nonandata[self.xname]<=bincut[i]), self.xname+'_bin'] = 'bin_'+str(100+i) 
+                    nonandata.loc[(nonandata[self.xname] > bincut[i-1])&(nonandata[self.xname]<=bincut[i]),'cut_point'] = bincut[i]
                 elif (i == len(bincut)):
-                    nonandata[self.xname+'_bin'][nonandata[self.xname] > bincut[i-1]] = 'bin_'+str(100+i)
-                    nonandata["cut_point"][nonandata[self.xname] > bincut[i-1]] = max(nonandata[self.xname])
+                    nonandata.loc[nonandata[self.xname] > bincut[i-1], self.xname+'_bin'] = 'bin_'+str(100+i)
+                    nonandata.loc[nonandata[self.xname] > bincut[i-1], "cut_point"] = max(nonandata[self.xname])
                 
         else:
             bincut = list(set(nonandata[self.xname]))
             bincut.sort()
             for i,v in enumerate(bincut):
-                nonandata[self.xname+'_bin'][nonandata[self.xname] == i] = 'bin_'+str(100+i+1)
-                nonandata['cut_point'][nonandata[self.xname] == bincut[i]] = v
+                nonandata.loc[nonandata[self.xname] == i, self.xname+'_bin'] = 'bin_'+str(100+i+1)
+                nonandata.loc[nonandata[self.xname] == bincut[i],'cut_point'] = v
             
         bincut.sort()
         

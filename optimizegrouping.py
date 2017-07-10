@@ -11,6 +11,7 @@ class optmizeGrouping(object):
     def optimzegrouping(self, datafile, xnames, target):
         
         data = pd.read_csv(datafile)
+        data = data.fillna("missing")
         dataname = datafile.split("/")[-1].split(".")[0]
         datapath = datafile.split(dataname)[:-1][0]
         os.system("rm -rf " + datapath + dataname)
@@ -42,7 +43,7 @@ class optmizeGrouping(object):
             aa = g.binning()
             x_bin = xname+"_bin"
             print("Xname = " + xname)
-            print(aa)
+            #print(aa)
             bbb = gp.grouping(aa, target, x_bin, i, sqlpath, mingroupsize = 0.02)
             cvb = bbb.calwoe(workbook)
             #print("xname = " + xname)

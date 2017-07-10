@@ -1,4 +1,8 @@
-  case when Pclass <= 1.0 then 1.00391595551
+  case when Age <= 4.0 then 1.11074004079
+       when Age > 4.0 and Age <= 17.0 then 0.242651410738
+       when Age > 17.0 then -0.105319318467
+       when Age = missing then -0.497217486469 end as Age_woe
+ ,case when Pclass <= 1.0 then 1.00391595551
        when Pclass > 1.0 and Pclass <= 2.0 then 0.364484844598
        when Pclass > 2.0 then -0.666482656715
        else 0.0000 end as Pclass_woe
